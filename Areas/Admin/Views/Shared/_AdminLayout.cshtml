@@ -1,0 +1,96 @@
+﻿@{
+    // Lấy tên Controller hiện tại
+    var currentController = ViewContext.RouteData.Values["controller"] as string;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Quản Trị Hệ Thống</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f3f4f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <!-- SIDEBAR BÊN TRÁI -->
+    <aside class="w-64 bg-gray-900 text-white flex flex-col hidden md:flex shrink-0">
+        <!-- Logo Admin -->
+        <div class="h-16 flex items-center px-6 border-b border-gray-800">
+            <i class="fa-solid fa-user-shield text-2xl text-blue-500 mr-3"></i>
+            <span class="text-lg font-bold uppercase tracking-wider">Quản trị viên</span>
+        </div>
+
+        <!-- Menu danh sách -->
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            <a href="/Admin/Admin/Index"
+               class="flex items-center px-4 py-3 rounded-lg mb-2 transition-colors @(currentController == "Admin" ? "bg-blue-600 text-white" : "text-gray-400 hover:text-white hover:bg-gray-800")">
+                <i class="fa-solid fa-users mr-3"></i> Quản lý Sinh viên
+            </a>
+
+            <!-- NÚT QUẢN LÝ GIẢNG VIÊN -->
+            <a href="/Admin/GiangVien/Index"
+               class="flex items-center px-4 py-3 rounded-lg mb-2 transition-colors @(currentController == "GiangVien" ? "bg-blue-600 text-white" : "text-gray-400 hover:text-white hover:bg-gray-800")">
+                <i class="fa-solid fa-chalkboard-user mr-3"></i> Quản lý Giảng viên
+            </a>
+            
+            <!-- NÚT QUẢN LÝ LỚP HỌC -->
+            <a href="/Admin/LopSinhHoat/Index"
+               class="flex items-center px-4 py-3 rounded-lg mb-2 transition-colors @(currentController == "LopSinhHoat" ? "bg-blue-600 text-white" : "text-gray-400 hover:text-white hover:bg-gray-800")">
+                <i class="fa-solid fa-building mr-3"></i> Quản lý Lớp học
+            </a>
+
+            <!-- NÚT QUẢN LÝ MÔN HỌC -->
+            <a href="/Admin/MonHoc/Index"
+               class="flex items-center px-4 py-3 rounded-lg mb-2 transition-colors @(currentController == "MonHoc" ? "bg-blue-600 text-white" : "text-gray-400 hover:text-white hover:bg-gray-800")">
+                <i class="fa-solid fa-book mr-3"></i> Quản lý Môn học
+            </a>
+
+            <!-- NÚT QUẢN LÝ HỌC PHÍ -->
+            <a href="/Admin/QuanLyHocPhi/Index"
+               class="flex items-center px-4 py-3 rounded-lg mb-2 transition-colors @(currentController == "QuanLyHocPhi" ? "bg-blue-600 text-white" : "text-gray-400 hover:text-white hover:bg-gray-800")">
+                <i class="fa-solid fa-file-invoice-dollar mr-3"></i>
+                Quản lý học phí
+            </a>
+
+            <!-- NÚT QUẢN LÝ HỒ SƠ -->
+            <a href="@Url.Action("QuanLyHoSo", "GiayTo", new { area = "" })"
+               class="flex items-center px-4 py-3 rounded-lg mb-2 transition-colors @(currentController == "GiayTo" ? "bg-blue-600 text-white" : "text-gray-400 hover:text-white hover:bg-gray-800")">
+                <i class="fa-solid fa-folder-open mr-3"></i>
+                Quản lý hồ sơ
+            </a>
+        </nav>
+
+        <!-- Đăng xuất -->
+        <div class="p-4 border-t border-gray-800">
+            <a href="/Account/Logout" class="flex items-center px-4 py-2 text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded transition-colors">
+                <i class="fa-solid fa-arrow-right-from-bracket w-6"></i>
+                <span class="font-medium">Đăng xuất</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- KHU VỰC NỘI DUNG CHÍNH (BÊN PHẢI) -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden">
+        <!-- Header phụ của Admin -->
+        <header class="h-16 bg-white shadow-sm flex items-center justify-between px-8 shrink-0">
+            <h1 class="text-xl font-bold text-gray-800">@ViewData["Title"]</h1>
+            <div class="flex items-center gap-3">
+                <span class="text-sm font-medium text-gray-600">Xin chào, Admin</span>
+                <img src="https://ui-avatars.com/api/?name=Admin&background=1e3a8a&color=fff" class="w-9 h-9 rounded-full border-2 border-blue-100" />
+            </div>
+        </header>
+
+        <!-- Chứa nội dung -->
+        <div class="flex-1 overflow-y-auto p-8">
+            @RenderBody()
+        </div>
+    </main>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

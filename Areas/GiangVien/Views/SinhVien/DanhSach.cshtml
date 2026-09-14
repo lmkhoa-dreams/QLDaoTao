@@ -1,0 +1,58 @@
+﻿@model IEnumerable<QLSinhVien.Models.SinhVien>
+@{
+    var lopHp = ViewBag.LopHocPhan as QLSinhVien.Models.HocPhanMo;
+    ViewData["Title"] = "Danh sách Sinh viên";
+    Layout = "~/Areas/GiangVien/Views/Shared/_GiangVienLayout.cshtml";
+}
+
+<div class="bg-white rounded-lg shadow-sm border border-gray-100">
+    <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-emerald-50/30">
+        <div>
+            <h2 class="text-lg font-bold text-gray-800">Sinh viên lớp học phần: <span class="text-emerald-600">@lopHp?.MaHp</span></h2>
+            <p class="text-sm text-gray-500 mt-1"><i class="fa-solid fa-book mr-1"></i> Môn học: @lopHp?.MaMon | Học kỳ: @lopHp?.HocKy</p>
+        </div>
+        <a href="/GiangVien/SinhVien/Index" class="text-sm font-medium text-gray-500 hover:text-emerald-600 transition-colors">
+            <i class="fa-solid fa-arrow-left mr-1"></i> Quay lại danh sách lớp
+        </a>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
+                    <th class="py-3 px-6 font-semibold w-16 text-center">STT</th>
+                    <th class="py-3 px-6 font-semibold w-32">MSSV</th>
+                    <th class="py-3 px-6 font-semibold">Họ và Tên</th>
+                    <th class="py-3 px-6 font-semibold">Lớp sinh hoạt</th>
+                    <th class="py-3 px-6 font-semibold text-center">Trạng thái</th>
+                    <th class="py-3 px-6 font-semibold text-center w-24">Chi tiết</th>
+                </tr>
+            </thead>
+            <tbody class="text-sm text-gray-700 divide-y divide-gray-100">
+                @if (Model != null && Model.Any())
+                {
+                    int stt = 1;
+                    foreach (var sv in Model)
+                    {
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="py-3 px-6 text-center text-gray-400 font-medium">@(stt++)</td>
+                            <td class="py-3 px-6 font-bold text-emerald-600">@sv.Mssv</td>
+                            <td class="py-3 px-6 font-bold text-gray-800">@sv.HoTen</td>
+                            <td class="py-3 px-6">@sv.MaLopSh</td>
+                            <td class="py-3 px-6 text-center">
+                                <span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-medium border border-blue-100">
+                                    @sv.TrangThaiHocTap
+                                </span>
+                            </td>
+                            <td class="py-3 px-6 text-center">
+                                <a href="/GiangVien/SinhVien/Details?id=@sv.Mssv" class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto hover:bg-emerald-500 hover:text-white transition-all shadow-sm" title="Xem hồ sơ">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

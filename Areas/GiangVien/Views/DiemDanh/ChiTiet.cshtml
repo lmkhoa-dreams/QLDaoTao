@@ -1,0 +1,95 @@
+﻿@model IEnumerable<QLSinhVien.Models.KetQuaHocTap>
+@{
+    var lopInfo = ViewBag.LopHocPhan as QLSinhVien.Models.HocPhanMo;
+    ViewData["Title"] = "Điểm danh lớp " + lopInfo?.MaHp;
+    Layout = "~/Areas/GiangVien/Views/Shared/_GiangVienLayout.cshtml";
+}
+
+<div class="flex items-center justify-between mb-6 border-b pb-4">
+    <div>
+        <h2 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-users-rays mr-2 text-blue-600"></i> Điểm danh sinh viên</h2>
+        <p class="text-gray-500 mt-1">Môn: <strong class="text-blue-700">@lopInfo?.MaMonNavigation?.TenMon</strong> - Lớp HP: @lopInfo?.MaHp</p>
+    </div>
+    <a href="/GiangVien/DiemDanh/Index" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded shadow-sm transition-colors text-sm font-medium">
+        <i class="fa-solid fa-arrow-left mr-1"></i> Quay lại
+    </a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 flex items-center shadow-sm">
+        <i class="fa-solid fa-check-circle mr-2"></i> <strong>@TempData["Success"]</strong>
+    </div>
+}
+
+<form action="/GiangVien/DiemDanh/Luu" method="post" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <input type="hidden" name="maHp" value="@lopInfo?.MaHp" />
+
+    <div class="overflow-x-auto mb-6">
+        <table class="w-full text-sm text-left">
+            <thead class="bg-blue-50 text-blue-800 border-b">
+                <tr>
+                    <th class="p-3 text-center w-12">STT</th>
+                    <th class="p-3">MSSV</th>
+                    <th class="p-3">Họ và Tên</th>
+                    <th class="p-3">Lớp SH</th>
+                    <th class="p-3 text-center text-red-600">Đã vắng (buổi)</th>
+                    <!-- Cột thao tác mới -->
+                    <th class="p-3 text-center w-[300px] bg-orange-50 text-orange-800 border-l border-orange-200"><i class="fa-solid fa-list-check mr-1"></i> Trạng thái hôm nay</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int stt = 1;
+                }
+                @foreach (var sv in Model)
+                {
+                    <tr class="border-b hover:bg-gray-50 transition-colors">
+                        <td class="p-3 text-center font-medium text-gray-500">@(stt++)</td>
+                        <td class="p-3 font-bold text-gray-700 font-mono">@sv.Mssv</td>
+                        <td class="p-3 font-bold text-blue-900">@sv.MssvNavigation?.HoTen</td>
+                        <td class="p-3 text-gray-600">@sv.MssvNavigation?.MaLopSh</td>
+                        <td class="p-3 text-center font-bold text-red-500 text-lg">@(sv.SoBuoiVang ?? 0)</td>
+
+                        <!-- Cụm 3 Radio Button: Đi học / Có phép / Vắng -->
+                        <td class="p-3 text-center border-l border-gray-100">
+                            <div class="flex items-center justify-center gap-3">
+                                <!-- Nút Đi học -->
+                                <label class="flex items-center cursor-pointer px-2 py-1 rounded hover:bg-green-50 transition">
+                                    <input type="radio" name="diemDanh_@sv.Mssv" value="dihoc" checked class="w-4 h-4 text-green-600 focus:ring-green-500 border-gray-300 mr-1" />
+                                    <span class="text-green-600 font-bold text-xs">Đi học</span>
+                                </label>
+
+                                <!-- Nút Có phép -->
+                                <label class="flex items-center cursor-pointer px-2 py-1 rounded hover:bg-yellow-50 transition">
+                                    <input type="radio" name="diemDanh_@sv.Mssv" value="cophep" class="w-4 h-4 text-yellow-500 focus:ring-yellow-500 border-gray-300 mr-1" />
+                                    <span class="text-yellow-600 font-bold text-xs">Có phép</span>
+                                </label>
+
+                                <!-- Nút Vắng -->
+                                <label class="flex items-center cursor-pointer px-2 py-1 rounded hover:bg-red-50 transition">
+                                    <input type="radio" name="diemDanh_@sv.Mssv" value="vang" class="w-4 h-4 text-red-600 focus:ring-red-500 border-gray-300 mr-1" />
+                                    <span class="text-red-500 font-bold text-xs">Vắng</span>
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                }
+
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="6" class="p-8 text-center text-gray-500">Chưa có sinh viên nào đăng ký lớp này.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="flex justify-end">
+            <button type="submit" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2.5 px-6 rounded-lg shadow-md transition-colors" onsubmit="return confirm('Xác nhận lưu danh sách vắng mặt?');">
+                <i class="fa-solid fa-floppy-disk mr-2"></i> Lưu Điểm Danh
+            </button>
+        </div>
+    }
+</form>

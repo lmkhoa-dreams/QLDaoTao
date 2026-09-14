@@ -1,0 +1,328 @@
+﻿@model List<QLSinhVien.Models.HoSoSinhVienViewModel>
+
+@{
+    ViewData["Title"] = "Quản lý hồ sơ";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+
+    var moHoSo = TempData["MoHoSo"] as string;
+    var thongBao = TempData["ThongBao"] as string;
+    var loi = TempData["Loi"] as string;
+}
+
+@functions {
+    public string MauTrangThai(string trangThai)
+    {
+        return trangThai switch
+        {
+            "Chờ duyệt" => "bg-yellow-100 text-yellow-800",
+            "Đã duyệt" => "bg-green-100 text-green-700",
+            "Đã từ chối" => "bg-red-100 text-red-700",
+            _ => "bg-gray-100 text-gray-600"
+        };
+    }
+}
+
+<div class="space-y-5">
+
+    <div>
+        <h2 class="text-2xl font-bold text-gray-800">
+            Hồ sơ sinh viên
+        </h2>
+        <p class="mt-1 text-sm text-gray-500">
+            Chọn sinh viên để xem thông tin và xét duyệt giấy tờ.
+        </p>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(thongBao))
+    {
+        <div role="status"
+             class="rounded-lg border border-green-200 bg-green-50 p-4 text-green-700">
+            <i class="fa-solid fa-circle-check mr-2"></i>
+            @thongBao
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(loi))
+    {
+        <div role="alert"
+             class="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
+            @loi
+        </div>
+    }
+
+    @if (Model.Count == 0)
+    {
+        <div class="rounded-xl border border-gray-200 bg-white p-12 text-center">
+            <i class="fa-solid fa-folder-open mb-4 text-4xl text-gray-300"></i>
+            <p class="text-gray-500">
+                Chưa có sinh viên upload giấy tờ.
+            </p>
+        </div>
+    }
+
+    @foreach (var hoSo in Model)
+    {
+        var sv = hoSo.SinhVien;
+
+        <details open="@(moHoSo == sv.Mssv)"
+                 class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+
+            @* Thanh hồ sơ: trạng thái trái, tên sinh viên phải *@
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 p-5 hover:bg-gray-50">
+
+                <span class="shrink-0 rounded-full px-3 py-1 text-sm font-semibold @MauTrangThai(hoSo.TrangThai)">
+                    @hoSo.TrangThai
+                </span>
+
+                <div class="flex min-w-0 items-center gap-4">
+                    <div class="text-right">
+                        <p class="break-words font-semibold text-gray-800">
+                            @sv.HoTen
+                        </p>
+                        <p class="mt-1 text-sm text-gray-500">
+                            @sv.Mssv · @hoSo.GiayTo.Count giấy tờ
+                        </p>
+                    </div>
+
+                    <i class="fa-solid fa-chevron-down text-gray-400"
+                       aria-hidden="true"></i>
+                </div>
+            </summary>
+
+            <div class="border-t border-gray-200 p-5">
+
+                @* Thông tin sinh viên *@
+                <div class="mb-6 rounded-lg bg-gray-50 p-5">
+                    <h3 class="mb-4 font-semibold text-gray-800">
+                        <i class="fa-solid fa-user-graduate mr-2 text-blue-600"></i>
+                        Thông tin sinh viên
+                    </h3>
+
+                    <dl class="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2 lg:grid-cols-3">
+                        <div>
+                            <dt class="text-gray-500">Mã số sinh viên</dt>
+                            <dd class="mt-1 font-medium">@sv.Mssv</dd>
+                        </div>
+
+                        <div>
+                            <dt class="text-gray-500">Họ tên</dt>
+                            <dd class="mt-1 font-medium">@sv.HoTen</dd>
+                        </div>
+
+                        <div>
+                            <dt class="text-gray-500">Ngày sinh</dt>
+                            <dd class="mt-1 font-medium">
+                                @sv.NgaySinh.ToString("dd/MM/yyyy")
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt class="text-gray-500">Lớp sinh hoạt</dt>
+                            <dd class="mt-1 font-medium">@sv.MaLopSh</dd>
+                        </div>
+
+                        <div>
+                            <dt class="text-gray-500">Số điện thoại</dt>
+                            <dd class="mt-1 font-medium">
+                                @(sv.SoDienThoai ?? "Chưa cập nhật")
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt class="text-gray-500">Email</dt>
+                            <dd class="mt-1 break-words font-medium">
+                                @(sv.EmailTruong ?? sv.EmailCaNhan ?? "Chưa cập nhật")
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <h3 class="mb-4 font-semibold text-gray-800">
+                    <i class="fa-solid fa-file-lines mr-2 text-blue-600"></i>
+                    Giấy tờ đã upload
+                </h3>
+
+                <div class="space-y-4">
+                    @foreach (var giayTo in hoSo.GiayTo)
+                    {
+                        var trangThai = giayTo.TrangThai == "Từ chối"
+                        ? "Đã từ chối"
+                        : giayTo.TrangThai;
+
+                        <div class="rounded-lg border border-gray-200 p-4">
+
+                            <div class="flex flex-wrap items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <p class="font-semibold text-gray-800">
+                                        @giayTo.LoaiGiayTo
+                                    </p>
+
+                                    <p class="mt-1 break-all text-sm text-gray-500">
+                                        @giayTo.TenFile
+                                    </p>
+
+                                    <p class="mt-1 text-xs text-gray-400">
+                                        Tải lên:
+                                        @giayTo.NgayTaiLen.ToString("dd/MM/yyyy HH:mm")
+                                    </p>
+                                </div>
+
+                                <span class="rounded-full px-3 py-1 text-xs font-semibold @MauTrangThai(trangThai)">
+                                    @trangThai
+                                </span>
+                            </div>
+
+                            @{
+                                var duoiFile = System.IO.Path.GetExtension(giayTo.DuongDan)
+                                .ToLowerInvariant();
+
+                                var urlXem = Url.Action(
+                                "XemFile",
+                                "GiayTo",
+                                new { area = "", id = giayTo.MaGiayTo });
+
+                                var laAnh = duoiFile == ".jpg"
+                                || duoiFile == ".jpeg"
+                                || duoiFile == ".png";
+                            }
+
+                            <div class="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+                                @if (laAnh)
+                                {
+                                    <a href="@urlXem"
+                                       target="_blank"
+                                       rel="noopener"
+                                       class="block p-3"
+                                       title="Bấm để mở ảnh kích thước lớn">
+
+                                        <img src="@urlXem"
+                                             alt="@giayTo.LoaiGiayTo"
+                                             loading="lazy"
+                                             class="mx-auto max-h-[600px] max-w-full rounded object-contain" />
+                                    </a>
+                                }
+                                else if (duoiFile == ".pdf")
+                                {
+                                    <iframe src="@urlXem"
+                                            title="Xem @giayTo.LoaiGiayTo"
+                                            loading="lazy"
+                                            class="h-[600px] w-full border-0 bg-white">
+                                    </iframe>
+                                }
+                                else
+                                {
+                                    <p class="p-4 text-sm text-gray-500">
+                                        Định dạng này chưa hỗ trợ xem trực tiếp.
+                                    </p>
+                                }
+                            </div>
+
+                            <div class="mt-3 flex flex-wrap gap-4">
+                                @if (laAnh || duoiFile == ".pdf")
+                                {
+                                    <a href="@urlXem"
+                                       target="_blank"
+                                       rel="noopener"
+                                       class="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:underline">
+                                        <i class="fa-solid fa-up-right-from-square"></i>
+                                        Mở trong tab mới
+                                    </a>
+                                }
+
+                                <a href="@Url.Action("TaiFile", "GiayTo", new { area = "", id = giayTo.MaGiayTo })"
+                                   class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:underline">
+                                    <i class="fa-solid fa-download"></i>
+                                    Tải xuống
+                                </a>
+                            </div>
+
+                            @if (giayTo.TrangThai == "Chờ duyệt")
+                            {
+                                <div class="mt-4 flex flex-col gap-3 border-t border-gray-100 pt-4">
+
+                                    @* Form duyệt *@
+                                    <form method="post"
+                                          action="@Url.Action("XetDuyet", "GiayTo", new { area = "" })">
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="@giayTo.MaGiayTo" />
+
+                                        <input type="hidden"
+                                               name="chapNhan"
+                                               value="true" />
+
+                                        <button type="submit"
+                                                class="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700">
+                                            <i class="fa-solid fa-check mr-1"></i>
+                                            Duyệt giấy tờ
+                                        </button>
+                                    </form>
+
+                                    @* Form từ chối, bắt buộc nhập lý do *@
+                                    <form method="post"
+                                          action="@Url.Action("XetDuyet", "GiayTo", new { area = "" })"
+                                          class="flex flex-col gap-2 sm:flex-row">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="id"
+                                               value="@giayTo.MaGiayTo" />
+
+                                        <input type="hidden"
+                                               name="chapNhan"
+                                               value="false" />
+
+                                        <label for="lydo-@giayTo.MaGiayTo"
+                                               class="sr-only">
+                                            Lý do từ chối @giayTo.LoaiGiayTo
+                                        </label>
+
+                                        <input id="lydo-@giayTo.MaGiayTo"
+                                               type="text"
+                                               name="ghiChu"
+                                               required
+                                               maxlength="500"
+                                               placeholder="Nhập lý do từ chối..."
+                                               class="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+
+                                        <button type="submit"
+                                                class="shrink-0 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700">
+                                            <i class="fa-solid fa-xmark mr-1"></i>
+                                            Từ chối
+                                        </button>
+                                    </form>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="mt-4 space-y-1 border-t border-gray-100 pt-3 text-sm text-gray-600">
+                                    <p>
+                                        Người xử lý:
+                                        <span class="font-medium">
+                                            @giayTo.NguoiDuyet
+                                        </span>
+                                    </p>
+
+                                    <p>
+                                        Ngày xử lý:
+                                        @(giayTo.NgayDuyet?.ToString("dd/MM/yyyy HH:mm") ?? "—")
+                                    </p>
+
+                                    @if (!string.IsNullOrWhiteSpace(giayTo.GhiChu))
+                                    {
+                                        <p class="break-words">
+                                            Ghi chú: @giayTo.GhiChu
+                                        </p>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </details>
+    }
+</div>

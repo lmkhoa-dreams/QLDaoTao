@@ -1,0 +1,95 @@
+﻿@using Microsoft.AspNetCore.Http
+@{
+    var currentController = ViewContext.RouteData.Values["controller"] as string;
+    // Lấy tên thật từ Session ra, nếu không có thì để "Thầy/Cô"
+    var fullName = Context.Session.GetString("FullName") ?? "Thầy/Cô";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Cổng Giảng Viên</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 flex h-screen overflow-hidden font-sans">
+
+    <!-- MENU BÊN TRÁI (SIDEBAR) -->
+    <div class="w-64 bg-slate-800 text-white flex flex-col shadow-xl z-20 shrink-0">
+        <div class="h-16 flex items-center justify-center border-b border-slate-700 bg-slate-900 shrink-0">
+            <h1 class="text-lg font-bold uppercase tracking-wider text-emerald-400">
+                <i class="fa-solid fa-chalkboard-user mr-2"></i> CỔNG GIẢNG VIÊN
+            </h1>
+        </div>
+
+        <div class="flex-1 overflow-y-auto py-6 px-4">
+            <a href="/GiangVien/Home/Index"
+               class="flex items-center px-4 py-3 rounded-lg mb-2 transition-colors @(currentController == "Home" ? "bg-emerald-600 text-white shadow-md" : "text-gray-400 hover:text-white hover:bg-slate-700")">
+                <i class="fa-solid fa-house w-6"></i> Tổng quan
+            </a>
+
+            <a href="/GiangVien/SinhVien/Index"
+               class="flex items-center px-4 py-3 rounded-lg mb-2 transition-colors @(currentController == "SinhVien" ? "bg-emerald-600 text-white shadow-md" : "text-gray-400 hover:text-white hover:bg-slate-700")">
+                <i class="fa-solid fa-users w-6"></i> Lớp & Sinh viên
+            </a>
+
+            <a href="/GiangVien/DangKyDay/Index"
+               class="flex items-center px-4 py-3 rounded-lg mb-2 transition-colors @(currentController == "DangKyDay" ? "bg-emerald-600 text-white shadow-md" : "text-gray-400 hover:text-white hover:bg-slate-700")">
+                <i class="fa-solid fa-users w-6"></i> Đăng ký môn dạy
+            </a>
+
+            <a href="/GiangVien/LichTrinh/Index"
+               class="flex items-center px-4 py-3 rounded-lg mb-2 transition-colors @(currentController == "LichTrinh" ? "bg-emerald-600 text-white shadow-md" : "text-gray-400 hover:text-white hover:bg-slate-700")">
+                <i class="fa-solid fa-calendar-days w-6"></i> Lịch giảng dạy
+            </a>
+
+            <a href="/GiangVien/DiemDanh/Index"
+               class="flex items-center px-4 py-3 rounded-lg mb-2 transition-colors @(currentController == "DiemDanh" ? "bg-emerald-600 text-white shadow-md" : "text-gray-400 hover:text-white hover:bg-slate-700")">
+                <i class="fa-solid fa-user-check w-6"></i> Điểm danh
+            </a>
+
+            <a href="/GiangVien/Diem/Index"
+               class="flex items-center px-4 py-3 rounded-lg mb-2 transition-colors @(currentController == "Diem" ? "bg-emerald-600 text-white shadow-md" : "text-gray-400 hover:text-white hover:bg-slate-700")">
+                <i class="fa-solid fa-marker w-6"></i> Quản lý Điểm số
+            </a>
+        </div>
+
+        <div class="p-4 border-t border-slate-700 shrink-0">
+            <!-- Gọi thẳng hàm Logout của Account Controller -->
+            <a href="/Account/Logout" class="flex items-center text-red-400 hover:text-red-300 transition-colors px-4 py-2">
+                <i class="fa-solid fa-right-from-bracket mr-3"></i> Đăng xuất
+            </a>
+        </div>
+    </div>
+
+    <!-- KHU VỰC NỘI DUNG CHÍNH (Phải căng full w-full) -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden w-full relative">
+
+        <!-- HEADER (Thêm w-full và shrink-0 để không bị bóp) -->
+        <div class="h-16 bg-white shadow-sm flex items-center justify-between px-8 border-b border-gray-200 shrink-0 w-full z-10">
+            <h2 class="text-xl font-bold text-gray-800">@ViewData["Title"]</h2>
+
+            <!-- Avatar Giảng viên -->
+            <div class="flex items-center gap-3">
+                <div class="text-right">
+                    <!-- Gọi tên thật ra -->
+                    <span class="block text-sm font-bold text-gray-700">@fullName</span>
+                    <span class="block text-xs text-emerald-600 font-medium">Giảng viên</span>
+                </div>
+                <div class="w-10 h-10 bg-emerald-100 border border-emerald-200 rounded-full flex items-center justify-center text-emerald-600 shadow-sm">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- RENDER NỘI DUNG TRANG (Scroll ở đây) -->
+        <div class="flex-1 overflow-y-auto p-8 bg-slate-50 relative">
+            @RenderBody()
+        </div>
+
+    </div>
+
+</body>
+</html>

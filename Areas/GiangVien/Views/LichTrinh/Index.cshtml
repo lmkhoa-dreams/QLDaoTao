@@ -1,0 +1,101 @@
+﻿@model IEnumerable<QLSinhVien.Models.HocPhanMo>
+@{
+    ViewData["Title"] = "Lịch giảng dạy";
+    Layout = "~/Areas/GiangVien/Views/Shared/_GiangVienLayout.cshtml";
+    var tuDien = ViewBag.TuDienMonHoc as Dictionary<string, string>;
+
+    var danhSachThu = new List<string> { "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật" };
+    var danhSachCa = new List<string> { "Sáng", "Chiều", "Tối" };
+
+    bool IsInCa(int? tietBatDau, string ca)
+    {
+        if (!tietBatDau.HasValue) return false;
+        if (ca == "Sáng" && tietBatDau >= 1 && tietBatDau <= 6) return true;
+        if (ca == "Chiều" && tietBatDau >= 7 && tietBatDau <= 12) return true;
+        if (ca == "Tối" && tietBatDau >= 13) return true;
+        return false;
+    }
+}
+
+<div class="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 pb-4">
+    <h2 class="text-2xl font-bold text-gray-600">Lịch học, lịch thi theo tuần</h2>
+
+    <div class="flex items-center gap-2 text-sm">
+
+        <!-- BỘ LỌC HỌC KỲ: Form tự động submit -->
+        <form id="formHocKyLich" action="/GiangVien/LichTrinh/Index" method="get" class="flex items-center bg-white border border-gray-300 rounded overflow-hidden">
+            <span class="px-3 py-1.5 border-r border-gray-300 bg-gray-50 text-gray-600">Học kỳ</span>
+            <select name="hocKy" onchange="document.getElementById('formHocKyLich').submit()" class="px-3 py-1.5 text-blue-600 hover:bg-blue-50 bg-white font-medium focus:outline-none cursor-pointer border-none appearance-none">
+                @if (ViewBag.DsHocKy != null)
+                {
+                    foreach (var hk in ViewBag.DsHocKy)
+                    {
+                        <option value="@hk" selected="@(ViewBag.HocKyHienTai == hk ? "selected" : null)">@hk</option>
+                    }
+                }
+            </select>
+        </form>
+
+        <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded transition-colors"><i class="fa-solid fa-print mr-1"></i> In lịch</button>
+    </div>
+</div>
+
+<!-- BẢNG LỊCH CHÍNH -->
+<div class="bg-white rounded shadow-sm border border-gray-300 overflow-x-auto">
+    <table class="w-full min-w-[1000px] border-collapse">
+        <thead>
+            <tr class="bg-slate-50 border-b border-gray-300">
+                <th class="border-r border-gray-300 p-3 text-blue-500 font-bold w-24 text-center">Ca học</th>
+                @foreach (var thu in danhSachThu)
+                {
+                    <th class="border-r border-gray-300 p-3 text-blue-500 font-bold text-center w-[12.5%]">
+                        @thu
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ca in danhSachCa)
+            {
+                <tr class="border-b border-gray-300">
+                    <td class="border-r border-gray-300 p-4 text-center font-bold text-gray-600 bg-[#fafad2] align-middle">
+                        @ca
+                    </td>
+
+                    @foreach (var thu in danhSachThu)
+                    {
+                        <td class="border-r border-gray-300 p-1 align-top h-40 relative">
+                            <div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: linear-gradient(#ccc 1px, transparent 1px), linear-gradient(90deg, #ccc 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+                            <!-- Đổ dữ liệu -->
+                            @if (Model != null)
+                            {
+                                var lopTrongCa = Model.Where(m => m.Thu == thu && IsInCa(m.TietBatDau, ca)).ToList();
+                                foreach (var lop in lopTrongCa)
+                                {
+                                    string tenMon = tuDien != null && tuDien.ContainsKey(lop.MaMon) ? tuDien[lop.MaMon] : "Chưa rõ";
+
+                                    <div class="relative z-10 bg-[#93c5fd] border border-[#60a5fa] rounded-sm p-2 mb-1 text-[13px] text-gray-800 shadow-sm">
+                                        <p class="font-bold leading-tight mb-1 text-black">@tenMon</p>
+                                        <p class="text-xs mb-0.5">Mã HP: @lop.MaHp</p>
+                                        <p class="text-xs mb-0.5">Tiết: @lop.TietBatDau - @lop.TietKetThuc</p>
+                                        <p class="text-xs mb-0.5">Phòng: <span class="font-semibold">@lop.PhongHoc</span></p>
+                                    </div>
+                                }
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- CHÚ THÍCH -->
+<div class="flex flex-wrap items-center gap-x-8 gap-y-3 mt-6 text-[13px] text-gray-700">
+    <div class="flex items-center gap-2"><span class="w-10 h-4 bg-[#e9ecef] border border-gray-300 inline-block"></span> Lịch học lý thuyết</div>
+    <div class="flex items-center gap-2"><span class="w-10 h-4 bg-[#7cd036] border border-[#6ab02d] inline-block"></span> Lịch học thực hành</div>
+    <div class="flex items-center gap-2"><span class="w-10 h-4 bg-[#74ccf4] border border-[#5ab2db] inline-block"></span> Lịch học trực tuyến</div>
+    <div class="flex items-center gap-2"><span class="w-10 h-4 bg-[#ffff99] border border-[#e6e67a] inline-block"></span> Lịch thi</div>
+    <div class="flex items-center gap-2"><span class="w-10 h-4 bg-[#e84c3d] border border-[#c94134] inline-block"></span> Lịch tạm ngưng</div>
+</div>

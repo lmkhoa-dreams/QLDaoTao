@@ -1,0 +1,74 @@
+﻿@model IEnumerable<QLSinhVien.Models.LopSinhHoat>
+
+@{
+    ViewData["Title"] = "Quản lý Lớp sinh hoạt";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Danh sách Lớp sinh hoạt</h2>
+    <a href="/Admin/LopSinhHoat/Create" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow flex items-center transition-colors">
+        <i class="fa-solid fa-plus mr-2"></i> Thêm Lớp mới
+    </a>
+</div>
+
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50 text-gray-600 text-sm">
+            <tr>
+                <th class="px-6 py-3 text-left font-semibold uppercase tracking-wider w-32">Mã Lớp</th>
+                <th class="px-6 py-3 text-left font-semibold uppercase tracking-wider">Tên Lớp</th>
+                <th class="px-6 py-3 text-left font-semibold uppercase tracking-wider">Niên Khóa</th>
+                <th class="px-6 py-3 text-left font-semibold uppercase tracking-wider">Ngành đào tạo</th>
+                <th class="px-6 py-3 text-left font-semibold uppercase tracking-wider">Khoa quản lý</th>
+                <th class="px-6 py-3 text-center font-semibold uppercase tracking-wider w-32">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody class="text-sm text-gray-700 divide-y divide-gray-100">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 font-bold text-blue-600">@item.MaLopSh</td>
+                        <td class="px-6 py-4 font-bold text-gray-800">@item.TenLop</td>
+                        <td class="px-6 py-4">
+                            <span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md text-xs font-medium">@item.NienKhoa</span>
+                        </td>
+                        <td class="px-6 py-4">@item.TenNganh</td>
+                        <td class="px-6 py-4">@item.TenKhoa</td>
+
+                        <td class="px-6 py-4 text-center flex justify-center gap-3">
+                            <!-- Nút Xem chi tiết -->
+                            <a href="/Admin/LopSinhHoat/Details?id=@item.MaLopSh" class="text-emerald-500 hover:text-emerald-700 transition-colors" title="Xem chi tiết">
+                                <i class="fa-solid fa-eye text-lg"></i>
+                            </a>
+
+                            <!-- Nút Sửa -->
+                            <a href="/Admin/LopSinhHoat/Edit?id=@item.MaLopSh" class="text-blue-500 hover:text-blue-700 transition-colors" title="Sửa thông tin lớp">
+                                <i class="fa-regular fa-pen-to-square text-lg"></i>
+                            </a>
+
+                            <!-- Nút Xóa -->
+                            <form action="/Admin/LopSinhHoat/Delete" method="post" class="m-0" onsubmit="return confirm('Bạn có chắc chắn muốn xóa lớp này? (Chú ý: Không thể xóa nếu lớp đang có sinh viên)');">
+                                <input type="hidden" name="id" value="@item.MaLopSh" />
+                                <button type="submit" class="text-red-500 hover:text-red-700 transition-colors bg-transparent border-0 p-0 cursor-pointer" title="Xóa lớp">
+                                    <i class="fa-regular fa-trash-can text-lg"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="px-6 py-10 text-center text-gray-500">
+                        <i class="fa-solid fa-folder-open text-4xl mb-3 text-gray-300 block"></i>
+                        Chưa có dữ liệu lớp sinh hoạt nào.
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

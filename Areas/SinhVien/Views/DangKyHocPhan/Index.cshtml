@@ -1,0 +1,344 @@
+﻿@model IEnumerable<QLSinhVien.Models.HocPhanMo>
+@{
+    ViewData["Title"] = "Đăng ký học phần";
+    Layout = "~/Areas/SinhVien/Views/Shared/_SinhVienLayout.cshtml";
+}
+
+<div class="bg-white p-6 min-h-screen">
+    <h2 class="text-2xl font-bold text-gray-600 mb-6 border-b pb-2">Đăng ký học phần</h2>
+
+    <!-- BỘ LỌC TỰ ĐỘNG CHUYỂN HỌC KỲ -->
+    <div class="flex items-center gap-6 mb-8 pl-4">
+        <form id="formHocKy" action="/SinhVien/DangKyHocPhan/Index" method="get">
+            <select name="hocKy" onchange="document.getElementById('formHocKy').submit()" class="border border-gray-300 rounded px-4 py-2 min-w-[200px] focus:outline-none focus:border-blue-500 font-medium text-blue-900 cursor-pointer">
+                <option value="HK1_2026_2027" selected="@(ViewBag.HocKyHienTai == "HK1_2026_2027" ? "selected" : null)">HK 1 NH 2026-2027</option>
+                <option value="HK2_2026_2027" selected="@(ViewBag.HocKyHienTai == "HK2_2026_2027" ? "selected" : null)">HK 2 NH 2026-2027</option>
+            </select>
+        </form>
+
+        <div class="flex items-center gap-4 text-sm text-gray-600">
+            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="loaiDK" checked class="w-4 h-4 text-blue-600"> Học mới</label>
+            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="loaiDK" class="w-4 h-4 text-blue-600"> Học lại</label>
+            <label class="flex items-center gap-1 cursor-pointer"><input type="radio" name="loaiDK" class="w-4 h-4 text-blue-600"> Học cải thiện</label>
+        </div>
+    </div>
+
+    <!-- THÔNG BÁO -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 flex items-center shadow-sm">
+            <i class="fa-solid fa-check-circle text-lg mr-2"></i> <strong>Thành công!</strong> &nbsp; @TempData["Success"]
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 flex items-center shadow-sm">
+            <i class="fa-solid fa-triangle-exclamation text-lg mr-2"></i> <strong>Lỗi:</strong> &nbsp; @TempData["Error"]
+        </div>
+    }
+
+    <!-- PHẦN 1: BẢNG CHỌN MÔN HỌC -->
+    <h3 class="text-lg font-bold text-blue-700 border-l-4 border-red-500 pl-2 mb-4">Môn học/học phần đang chờ đăng ký (@ViewBag.HocKyHienTai)</h3>
+    <div class="overflow-x-auto border border-gray-200 shadow-sm mb-10">
+        <table class="w-full text-center border-collapse text-sm">
+            <thead>
+                <tr class="bg-gray-50 text-blue-700 border-b border-gray-200">
+                    <th class="p-3 border-r w-12"></th>
+                    <th class="p-3 border-r w-16">STT</th>
+                    <th class="p-3 border-r w-32">Mã học phần</th>
+                    <th class="p-3 border-r text-left">Tên môn học/học phần</th>
+                    <th class="p-3 border-r w-16">TC</th>
+                    <th class="p-3 border-r w-24">Bắt buộc</th>
+                    <th class="p-3 w-48 text-xs">học phần: học trước (a),<br>tiên quyết (b),<br>song hành (c)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int stt = 1;
+                    var dsMaMonDaHoc = ViewBag.DsMaMonDaHoc as List<string> ?? new List<string>();
+                    var dictTienQuyet = ViewBag.DictTienQuyet as Dictionary<string, List<string>> ?? new Dictionary<string, List<string>>();
+                }
+
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="7" class="p-8 text-center text-gray-500 text-base">Không có môn học nào mở cho khoa của bạn trong học kỳ này hoặc bạn đã đăng ký hết.</td></tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        string maMonHienTai = item.MaMon != null ? item.MaMon.Trim() : "";
+
+                        List<string> monTienQuyets = dictTienQuyet.ContainsKey(maMonHienTai) ? dictTienQuyet[maMonHienTai] : new List<string>();
+
+                        List<string> monThieu = new List<string>();
+                        foreach (var mtq in monTienQuyets)
+                        {
+                            string mtqTrim = mtq != null ? mtq.Trim() : "";
+                            if (!dsMaMonDaHoc.Contains(mtqTrim))
+                            {
+                                monThieu.Add(mtqTrim);
+                            }
+                        }
+
+                        bool duDieuKien = monThieu.Count == 0;
+
+                        if (duDieuKien)
+                        {
+                            <tr class="hover:bg-blue-50 border-b border-gray-200 text-gray-700 transition-colors cursor-pointer group"
+                                onclick="document.getElementById('radio_@maMonHienTai').checked = true; taiDanhSachLop('@maMonHienTai')">
+                                <td class="p-3 border-r text-center">
+                                    <input type="radio" id="radio_@maMonHienTai" name="chonMon" value="@maMonHienTai" class="w-4 h-4 cursor-pointer text-blue-600">
+                                </td>
+                                <td class="p-3 border-r text-center">@(stt++)</td>
+                                <td class="p-3 border-r font-medium text-center">@maMonHienTai</td>
+                                <td class="p-3 border-r text-left font-medium text-blue-900 group-hover:text-blue-600">@item.MaMonNavigation?.TenMon</td>
+                                <td class="p-3 border-r text-center font-medium">@item.MaMonNavigation?.SoTinChi</td>
+                                <td class="p-3 border-r text-lg text-center">
+                                    @if (item.MaMonNavigation?.SoTinChi >= 3)
+                                    {
+                                        <span class="text-red-500"><i class="fa-solid fa-circle-xmark"></i></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-green-500"><i class="fa-solid fa-circle-check"></i></span>
+                                    }
+                                </td>
+                                <td class="p-3 text-red-500 font-medium"></td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr class="bg-gray-100 border-b border-gray-200 text-gray-400 opacity-60 cursor-not-allowed">
+                                <td class="p-3 border-r text-center">
+                                    <input type="radio" disabled class="w-4 h-4 cursor-not-allowed">
+                                </td>
+                                <td class="p-3 border-r text-center">@(stt++)</td>
+                                <td class="p-3 border-r font-medium text-center">@maMonHienTai</td>
+                                <td class="p-3 border-r text-left font-medium">@item.MaMonNavigation?.TenMon</td>
+                                <td class="p-3 border-r text-center font-medium">@item.MaMonNavigation?.SoTinChi</td>
+                                <td class="p-3 border-r text-lg text-center">
+                                    @if (item.MaMonNavigation?.SoTinChi >= 3)
+                                    {
+                                        <span class="text-gray-400"><i class="fa-solid fa-circle-xmark"></i></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-400"><i class="fa-solid fa-circle-check"></i></span>
+                                    }
+                                </td>
+                                <td class="p-3 text-sm text-gray-700 text-center" title="Phải học môn này trước">
+                                    @Html.Raw(string.Join("<br/>", monThieu.Select(m => $"{m} <span class='text-red-500 font-bold'>(a)</span>")))
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PHẦN 2: KHUNG CHI TIẾT 2 CỘT (AJAX) -->
+    <div id="khungChiTietLop" class="grid grid-cols-1 lg:grid-cols-2 gap-6 hidden">
+        <div>
+            <h3 class="text-lg font-bold text-blue-700 border-l-4 border-red-500 pl-2 mb-4">Lớp học phần chờ đăng ký</h3>
+            <div class="border border-gray-200 overflow-hidden shadow-sm">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50 text-blue-700 border-b">
+                            <th class="p-3 text-center border-r w-12">STT</th>
+                            <th class="p-3 text-left border-r">Thông tin lớp học phần</th>
+                            <th class="p-3 text-center w-28">Đã đăng ký</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bangDanhSachLop"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="text-lg font-bold text-blue-700 border-l-4 border-red-500 pl-2 mb-4">Chi tiết lớp học phần</h3>
+            <div id="khungThongTinChiTiet" class="border border-yellow-400 bg-yellow-50/30 shadow-sm hidden transition-all">
+                <div class="grid grid-cols-2 border-b border-yellow-200 bg-yellow-50">
+                    <div class="p-3 text-center border-r border-yellow-200 font-medium text-blue-800">Trạng thái: <span class="text-red-600">Chỉ đăng ký</span></div>
+                    <div class="p-3 text-center font-bold text-gray-800" id="txtSiSo">Sĩ số tối đa: 0</div>
+                </div>
+                <div class="p-5 grid grid-cols-2 gap-4">
+                    <div class="text-sm leading-relaxed text-blue-900 font-medium">
+                        <p class="mb-1">Lịch học: <span id="txtLichHoc" class="font-bold">...</span></p>
+                        <p class="mb-1">Cơ sở: <span class="text-blue-700">Cơ sở 1</span></p>
+                        <p class="mb-1">Dãy nhà: <span class="text-blue-700">Khu Thực Hành</span></p>
+                        <p>Phòng: <span id="txtPhong" class="text-blue-700 font-bold">...</span></p>
+                    </div>
+                    <div class="text-sm font-medium text-blue-900 border-l border-yellow-200 pl-4">
+                        <p class="mb-1">GV: <span id="txtGV" class="font-bold">...</span></p>
+                        <p class="text-blue-600 font-normal mt-2 text-xs">@ViewBag.HocKyHienTai</p>
+                    </div>
+                </div>
+                <div class="p-4 border-t border-yellow-200 flex justify-center bg-white">
+                    <form action="/SinhVien/DangKyHocPhan/LuuDangKy" method="post">
+                        <input type="hidden" name="MaHP" id="inputMaHP" value="">
+                        <!-- Truyền biến học kỳ để sau khi đăng ký trang không bị nhảy về HK1 -->
+                        <input type="hidden" name="hocKy" value="@ViewBag.HocKyHienTai">
+                        <button type="submit" class="bg-[#0ea5e9] hover:bg-blue-600 text-white font-bold py-2.5 px-16 rounded transition-colors shadow-md">
+                            Đăng ký
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PHẦN 3: BẢNG LỚP ĐÃ ĐĂNG KÝ (CÓ TÍNH TIỀN) -->
+    <div class="mt-12 bg-white">
+        <div class="flex justify-between items-center mb-4 border-l-4 border-red-500 pl-2">
+            <h3 class="text-lg font-bold text-blue-700">Lớp HP đã đăng ký trong @ViewBag.HocKyHienTai</h3>
+            <button class="bg-[#0ea5e9] text-white px-3 py-1.5 rounded text-sm hover:bg-blue-600 shadow-sm"><i class="fa-solid fa-print"></i></button>
+        </div>
+
+        <div class="overflow-x-auto border border-gray-200 shadow-sm">
+            <table class="w-full text-center text-sm border-collapse">
+                <thead>
+                    <tr class="bg-gray-50 text-blue-700 border-b">
+                        <th class="p-3 border-r"><i class="fa-solid fa-bars"></i></th>
+                        <th class="p-3 border-r w-12">STT</th>
+                        <th class="p-3 border-r text-left">Mã lớp HP</th>
+                        <th class="p-3 border-r text-left w-64">Tên môn học/HP</th>
+                        <th class="p-3 border-r">TC</th>
+                        <th class="p-3 border-r text-right">Học phí (VND)</th>
+                        <th class="p-3 border-r">Hạn nộp</th>
+                        <th class="p-3 border-r">Trạng thái ĐK</th>
+                        <th class="p-3">Ngày ĐK</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var dsDaDK = ViewBag.DsDaDangKy as IEnumerable<QLSinhVien.Models.KetQuaHocTap>;
+                        int sttDK = 1;
+                        int tongTC = 0;
+                        long tongTien = 0;
+                        long donGiaTinChi = 990000;
+                    }
+
+                    @if (dsDaDK != null && dsDaDK.Any())
+                    {
+                        foreach (var d in dsDaDK)
+                        {
+                            tongTC += d.MaHpNavigation?.MaMonNavigation?.SoTinChi ?? 0;
+                        }
+                        tongTien = tongTC * donGiaTinChi;
+
+                        <tr class="border-b font-bold text-gray-800 bg-yellow-50">
+                            <td colspan="4" class="p-3 border-r text-center uppercase tracking-wide">Tổng</td>
+                            <td class="p-3 border-r text-lg text-blue-700">@tongTC</td>
+                            <td class="p-3 border-r text-right text-lg text-red-600">@tongTien.ToString("N0")</td>
+                            <td colspan="3" class="p-3"></td>
+                        </tr>
+
+                        foreach (var item in dsDaDK)
+                        {
+                            int tinChi = item.MaHpNavigation?.MaMonNavigation?.SoTinChi ?? 0;
+                            long hocPhi = tinChi * donGiaTinChi;
+                            var ngayDK = DateTime.Now;
+                            var hanNop = ngayDK.AddMonths(1);
+                            <tr class="border-b hover:bg-gray-50 text-gray-700 transition-colors">
+                                <td class="p-3 border-r text-center">
+                                    <form action="/SinhVien/DangKyHocPhan/HuyDangKy" method="post"
+                                          onsubmit="return confirm('Bạn có chắc chắn muốn HỦY đăng ký môn @item.MaHpNavigation?.MaMonNavigation?.TenMon không?');">
+                                        <input type="hidden" name="maHP" value="@item.MaHp" />
+                                        <input type="hidden" name="hocKy" value="@ViewBag.HocKyHienTai" />
+                                        <button type="submit" class="text-gray-400 hover:text-red-500 transition-colors" title="Hủy đăng ký">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="p-3 border-r">@(sttDK++)</td>
+                                <td class="p-3 border-r text-left font-medium">@item.MaHp</td>
+                                <td class="p-3 border-r text-left text-blue-900 font-medium">@item.MaHpNavigation?.MaMonNavigation?.TenMon</td>
+                                <td class="p-3 border-r">@tinChi</td>
+                                <td class="p-3 border-r text-right font-medium">@hocPhi.ToString("N0")</td>
+                                <td class="p-3 border-r font-medium text-red-600">@hanNop.ToString("dd/MM/yyyy")</td>
+                                <td class="p-3 border-r"><span class="text-green-500 mr-1"><i class="fa-solid fa-circle-check"></i></span> Đăng ký mới</td>
+                                <td class="p-3 text-xs">@ngayDK.ToString("dd/MM/yyyy")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="p-8 text-center text-gray-500 text-base">Bạn chưa đăng ký lớp học phần nào trong học kỳ này.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    let danhSachLopHienTai = [];
+
+    function taiDanhSachLop(maMon) {
+        // Hiện khung chi tiết lên
+        document.getElementById('khungChiTietLop').classList.remove('hidden');
+        document.getElementById('khungThongTinChiTiet').classList.add('hidden');
+
+        const tbody = document.getElementById('bangDanhSachLop');
+        tbody.innerHTML = '<tr><td colspan="3" class="p-6 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang tải dữ liệu...</td></tr>';
+
+        // Lấy thẳng học kỳ hiện tại từ Server (C#) gán xuống cho chắc ăn tuyệt đối
+        const hocKyHienTai = '@ViewBag.HocKyHienTai';
+
+        // Gắn thẳng mã môn và học kỳ vào link API
+        fetch(`/SinhVien/DangKyHocPhan/LayDanhSachLop?maMon=${maMon}&hocKy=${hocKyHienTai}`)
+            .then(response => response.json())
+            .then(data => {
+                danhSachLopHienTai = data;
+                tbody.innerHTML = '';
+
+                if(data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="p-6 text-center text-red-500 font-medium">Chưa có lớp học phần nào được mở cho môn này ở học kỳ hiện tại!</td></tr>';
+                    return;
+                }
+
+                data.forEach((lop, index) => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-yellow-50 cursor-pointer border-b border-gray-200 transition-colors group";
+                    tr.onclick = () => hienThiChiTiet(lop.maHp);
+
+                    tr.innerHTML = `
+                        <td class="p-3 text-center border-r text-blue-700 font-medium">${index + 1}</td>
+                        <td class="p-3 border-r">
+                            <div class="font-bold text-blue-900 mb-1 group-hover:text-blue-600 transition-colors">${lop.tenMon}</div>
+                            <div class="text-xs text-gray-600 mb-0.5">Trạng thái: <span class="text-red-500 font-medium">Chỉ đăng ký</span></div>
+                            <div class="text-xs text-gray-600">Mã lớp: <span class="font-medium text-gray-800">${lop.maHp}</span></div>
+                        </td>
+                        <td class="p-3 text-center text-blue-900 font-bold">
+                            ${lop.siSoHienTai} <span class="text-gray-500 font-normal">/ ${lop.siSoToiDa}</span>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                if (data.length > 0) {
+                    hienThiChiTiet(data[0].maHp);
+                }
+            })
+            .catch(err => {
+                console.error("Lỗi:", err);
+                tbody.innerHTML = '<tr><td colspan="3" class="p-6 text-center text-red-500">Có lỗi xảy ra khi tải dữ liệu! Vui lòng F5 lại trang.</td></tr>';
+            });
+    }
+
+    function hienThiChiTiet(maHp) {
+        const lop = danhSachLopHienTai.find(x => x.maHp === maHp);
+        if(!lop) return;
+
+        document.getElementById('khungThongTinChiTiet').classList.remove('hidden');
+        document.getElementById('txtSiSo').innerText = `Sĩ số tối đa: ${lop.siSoToiDa}`;
+        document.getElementById('txtLichHoc').innerText = `${lop.thu} (Tiết ${lop.tietBatDau} - ${lop.tietKetThuc})`;
+        document.getElementById('txtPhong').innerText = lop.phongHoc || 'Chưa xếp phòng';
+        document.getElementById('txtGV').innerText = lop.tenGv || 'Chưa phân công';
+        document.getElementById('inputMaHP').value = lop.maHp;
+    }
+</script>

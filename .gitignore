@@ -1,0 +1,48 @@
+# =========================
+# Visual Studio
+# =========================
+.vs/
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# =========================
+# Build
+# =========================
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+# =========================
+# NuGet
+# =========================
+packages/
+*.nupkg
+
+# =========================
+# Node / Tailwind
+# =========================
+node_modules/
+
+# =========================
+# File hệ thống
+# =========================
+Thumbs.db
+.DS_Store
+
+# =========================
+# File người dùng upload
+# =========================
+Uploads/
+App_Data/Uploads/
+wwwroot/uploads/
+
+# =========================
+# Secrets / Environment
+# =========================
+.env

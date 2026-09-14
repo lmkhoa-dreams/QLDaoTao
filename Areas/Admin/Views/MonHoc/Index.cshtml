@@ -1,0 +1,67 @@
+﻿@model IEnumerable<QLSinhVien.Models.MonHoc>
+@{
+    ViewData["Title"] = "Quản lý Môn học";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Danh sách Môn học</h2>
+    <a href="/Admin/MonHoc/Create" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow flex items-center transition-colors">
+        <i class="fa-solid fa-plus mr-2"></i> Thêm Môn học
+    </a>
+</div>
+
+@if (TempData["Error"] != null)
+{
+    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded shadow-sm">
+        <i class="fa-solid fa-triangle-exclamation mr-2"></i> @TempData["Error"]
+    </div>
+}
+
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50 text-gray-600 text-sm">
+            <tr>
+                <th class="px-6 py-3 text-left font-semibold uppercase tracking-wider w-32">Mã Môn</th>
+                <th class="px-6 py-3 text-left font-semibold uppercase tracking-wider">Tên Môn Học</th>
+                <th class="px-6 py-3 text-center font-semibold uppercase tracking-wider">Số Tín Chỉ</th>
+                <th class="px-6 py-3 text-center font-semibold uppercase tracking-wider w-40">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody class="text-sm text-gray-700 divide-y divide-gray-100">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 font-bold text-blue-600">@item.MaMon</td>
+                        <td class="px-6 py-4 font-bold text-gray-800">@item.TenMon</td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-bold border border-indigo-200">
+                                @item.SoTinChi
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-center flex justify-center gap-4">
+                            <a href="/Admin/MonHoc/Details?id=@item.MaMon" class="text-emerald-500 hover:text-emerald-700" title="Xem chi tiết">
+                                <i class="fa-solid fa-eye text-lg"></i>
+                            </a>
+                            <a href="/Admin/MonHoc/Edit?id=@item.MaMon" class="text-blue-500 hover:text-blue-700" title="Sửa">
+                                <i class="fa-regular fa-pen-to-square text-lg"></i>
+                            </a>
+                            <form action="/Admin/MonHoc/Delete" method="post" class="m-0" onsubmit="return confirm('Bạn có chắc chắn muốn xóa môn học này không?');">
+                                <input type="hidden" name="id" value="@item.MaMon" />
+                                <button type="submit" class="text-red-500 hover:text-red-700 bg-transparent border-0 p-0 cursor-pointer" title="Xóa">
+                                    <i class="fa-regular fa-trash-can text-lg"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="4" class="px-6 py-8 text-center text-gray-500">Chưa có môn học nào.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

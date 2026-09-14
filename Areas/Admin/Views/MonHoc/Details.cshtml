@@ -1,0 +1,38 @@
+﻿@model QLSinhVien.Models.MonHoc
+@{
+    ViewData["Title"] = "Chi Tiết Môn Học";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 max-w-2xl mx-auto mt-4">
+    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-blue-50/50">
+        <h2 class="text-lg font-bold text-gray-700">Chi tiết Môn: <span class="text-blue-600">@Model.TenMon</span></h2>
+        <a href="/Admin/MonHoc/Index" class="text-gray-500 hover:text-blue-700 text-sm font-medium"><i class="fa-solid fa-arrow-left mr-1"></i> Quay lại</a>
+    </div>
+    <div class="p-8">
+        <div class="flex items-center gap-6 mb-8 bg-gray-50 p-6 rounded-lg border border-gray-100">
+            <div class="w-20 h-20 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-500 shadow-inner">
+                <i class="fa-solid fa-book-open text-3xl"></i>
+            </div>
+            <div>
+                <h3 class="text-2xl font-bold text-gray-800">@Model.TenMon</h3>
+                <p class="text-blue-600 font-semibold mt-1">@Model.MaMon</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-[15px]">
+            <div class="flex items-center p-4 bg-white border border-gray-100 rounded-lg shadow-sm">
+                <div class="text-blue-500 mr-4"><i class="fa-solid fa-star text-xl"></i></div>
+                <div>
+                    <span class="block text-gray-500 text-xs uppercase font-bold tracking-wider mb-1">Số Tín Chỉ</span>
+                    <span class="font-bold text-gray-800 text-lg">@Model.SoTinChi <span class="text-sm font-normal text-gray-500">tín chỉ</span></span>
+                </div>
+            </div>
+            <div class="flex items-center p-4 bg-white border border-gray-100 rounded-lg shadow-sm">
+                <div class="text-green-500 mr-4"><i class="fa-solid fa-check-circle text-xl"></i></div>
+                <div>
+                    <span class="block text-gray-500 text-xs uppercase font-bold tracking-wider mb-1">Trạng thái</span>
+                    <span class="font-bold text-green-700">Đang giảng dạy</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

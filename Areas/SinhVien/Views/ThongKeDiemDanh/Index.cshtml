@@ -1,0 +1,75 @@
+﻿@model IEnumerable<QLSinhVien.Models.KetQuaHocTap>
+@{
+    ViewData["Title"] = "Thống kê điểm danh";
+    Layout = "~/Areas/SinhVien/Views/Shared/_SinhVienLayout.cshtml";
+
+    // Nhóm dữ liệu theo Học kỳ để hiển thị cho đẹp
+    var dsTheoHocKy = Model.GroupBy(x => x.MaHpNavigation?.HocKy).ToList();
+}
+
+<div class="flex items-center justify-between mb-6 border-b pb-4">
+    <div>
+        <h2 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-calendar-check mr-2 text-purple-600"></i> Thống kê điểm danh</h2>
+    </div>
+    <a href="/SinhVien/SinhVien/Index" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded shadow-sm transition-colors text-sm font-medium">
+        <i class="fa-solid fa-arrow-left mr-1"></i> Quay lại
+    </a>
+</div>
+
+@if (!dsTheoHocKy.Any())
+{
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center text-gray-500">
+        <i class="fa-solid fa-folder-open text-4xl mb-3 text-gray-300"></i>
+        <p>Bạn chưa đăng ký môn học nào trên hệ thống.</p>
+    </div>
+}
+else
+{
+    @foreach (var group in dsTheoHocKy)
+    {
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6 overflow-hidden">
+            <!-- Tiêu đề Học kỳ -->
+            <div class="bg-purple-50 px-6 py-3 border-b border-purple-100 flex items-center justify-between">
+                <h3 class="font-bold text-purple-800 text-lg">Học kỳ: @group.Key</h3>
+                <span class="bg-purple-200 text-purple-800 text-xs px-2 py-1 rounded font-bold">@group.Count() môn</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-50 text-gray-700 border-b">
+                        <tr>
+                            <th class="p-4 text-center w-12">STT</th>
+                            <th class="p-4">Mã HP</th>
+                            <th class="p-4">Tên Môn Học</th>
+                            <th class="p-4 text-center text-orange-600 bg-orange-50 border-l border-white w-40">Có Phép</th>
+                            <th class="p-4 text-center text-red-600 bg-red-50 border-l border-white w-40">Không Phép</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int stt = 1;
+                        }
+                        @foreach (var item in group)
+                        {
+                            <tr class="border-b hover:bg-gray-50 transition-colors">
+                                <td class="p-4 text-center font-medium text-gray-500">@(stt++)</td>
+                                <td class="p-4 font-mono text-gray-600">@item.MaHp</td>
+                                <td class="p-4 font-bold text-blue-800">@item.MaHpNavigation?.MaMonNavigation?.TenMon</td>
+
+                                <!-- Cột Vắng Có Phép -->
+                                <td class="p-4 text-center bg-orange-50/50 border-l border-gray-100 font-bold text-orange-500 text-lg">
+                                    @(item.SoBuoiCoPhep ?? 0)
+                                </td>
+
+                                <!-- Cột Vắng Không Phép -->
+                                <td class="p-4 text-center bg-red-50/50 border-l border-gray-100 font-bold text-red-500 text-lg">
+                                    @(item.SoBuoiVang ?? 0)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+}   

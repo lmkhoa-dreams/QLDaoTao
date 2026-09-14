@@ -1,0 +1,72 @@
+﻿@model QLSinhVien.Models.SinhVien
+@{
+    ViewData["Title"] = "Hồ Sơ Cá Nhân";
+    Layout = "~/Areas/SinhVien/Views/Shared/_SinhVienLayout.cshtml";
+}
+
+<div class="max-w-7xl mx-auto">
+    <div class="bg-white rounded shadow-sm border border-gray-100 p-8">
+
+        <div class="flex flex-col md:flex-row gap-10">
+
+            <div class="flex flex-col w-full md:w-1/4">
+                <div class="flex justify-center mb-6">
+                    <img src="https://ui-avatars.com/api/?name=@Model.HoTen&background=random&size=200"
+                         alt="Avatar"
+                         class="w-40 h-40 rounded-full object-cover shadow-sm border-2 border-gray-200" />
+                </div>
+                <div class="space-y-4 text-[14.5px]">
+                    <div class="flex"><span class="text-gray-500 w-24 shrink-0">MSSV:</span> <span class="font-bold text-gray-800">@Model.Mssv</span></div>
+                    <div class="flex"><span class="text-gray-500 w-24 shrink-0">Họ tên:</span> <span class="font-bold text-gray-800">@Model.HoTen</span></div>
+                    <div class="flex"><span class="text-gray-500 w-24 shrink-0">Giới tính:</span> <span class="font-bold text-gray-800">@(Model.GioiTinh == true ? "Nam" : "Nữ")</span></div>
+                </div>
+            </div>
+
+            <div class="flex-1">
+                <h2 class="text-[22px] font-bold text-gray-700 mb-6">Thông tin học vấn</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-y-5 gap-x-6 text-[14.5px]">
+                    <div class="flex"><span class="text-gray-500 w-36 shrink-0">Trạng thái:</span> <span class="font-bold text-gray-800">Đang học</span></div>
+                    <div class="flex"><span class="text-gray-500 w-36 shrink-0">Mã hồ sơ:</span> <span class="font-bold text-gray-800">@Model.Mssv</span></div>
+                    <div class="flex"><span class="text-gray-500 w-36 shrink-0">Ngày vào trường:</span> <span class="font-bold text-gray-800">@Model.NgayVaoTruong</span></div>
+
+                    <div class="flex"><span class="text-gray-500 w-36 shrink-0">Lớp học:</span> <span class="font-bold text-gray-800">@(ViewBag.LopSinhHoat?.MaLopSh ?? "--")</span></div>
+                    <div class="flex"><span class="text-gray-500 w-36 shrink-0">Cơ sở:</span> <span class="font-bold text-gray-800">Cơ sở 1</span></div>
+                    <div class="flex"><span class="text-gray-500 w-36 shrink-0">Bậc đào tạo:</span> <span class="font-bold text-gray-800">Đại học</span></div>
+
+                    <div class="flex"><span class="text-gray-500 w-36 shrink-0">Loại hình:</span> <span class="font-bold text-gray-800">Chính quy 3.5 năm</span></div>
+                    <div class="flex"><span class="text-gray-500 w-36 shrink-0">Khoa:</span> <span class="font-bold text-gray-800">@(ViewBag.LopSinhHoat?.TenKhoa ?? "--")</span></div>
+                    <div class="flex"><span class="text-gray-500 w-36 shrink-0">Ngành:</span> <span class="font-bold text-gray-800">@(ViewBag.LopSinhHoat?.TenNganh ?? "--")</span></div>
+
+                    <div class="flex"><span class="text-gray-500 w-36 shrink-0">Chuyên ngành:</span> <span class="font-bold text-gray-800">@(ViewBag.LopSinhHoat?.TenNganh ?? "--")</span></div>
+                    <div class="flex lg:col-span-2"><span class="text-gray-500 w-36 shrink-0">Khóa học:</span> <span class="font-bold text-gray-800">@(ViewBag.LopSinhHoat?.NienKhoa ?? "--")</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-b border-gray-200 my-10"></div>
+
+        <div>
+            <h2 class="text-[22px] font-bold text-gray-700 mb-6">Thông tin cá nhân</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-y-5 gap-x-6 text-[14.5px]">
+                <div class="flex"><span class="text-gray-500 w-36 shrink-0">Ngày sinh:</span> <span class="font-bold text-gray-800">@(Model.NgaySinh.ToString("dd/MM/yyyy") ?? "--")</span></div>
+                <div class="flex"><span class="text-gray-500 w-36 shrink-0">Dân tộc:</span> <span class="font-bold text-gray-800">@(Model.DanToc ?? "--")</span></div>
+                <div class="flex"><span class="text-gray-500 w-36 shrink-0">Tôn giáo:</span> <span class="font-bold text-gray-800">@(Model.TonGiao ?? "--")</span></div>
+
+                <div class="flex"><span class="text-gray-500 w-36 shrink-0">Quốc tịch:</span> <span class="font-bold text-gray-800">@(Model.QuocTich ?? "Việt Nam")</span></div>
+                <div class="flex"><span class="text-gray-500 w-36 shrink-0">Số CCCD:</span> <span class="font-bold text-gray-800">@(Model.Cccd ?? "--")</span></div>
+                <div class="flex"><span class="text-gray-500 w-36 shrink-0">Ngày cấp:</span> <span class="font-bold text-gray-800">@(Model.NgayCap?.ToString("dd/MM/yyyy") ?? "--")</span></div>
+
+                <div class="flex"><span class="text-gray-500 w-36 shrink-0">Khu vực:</span> <span class="font-bold text-gray-800">@(Model.KhuVuc ?? "--")</span></div>
+                <div class="flex lg:col-span-2"><span class="text-gray-500 w-36 shrink-0">Nơi cấp:</span> <span class="font-bold text-gray-800">@(Model.NoiCap ?? "--")</span></div>
+
+                <div class="flex"><span class="text-gray-500 w-36 shrink-0">Điện thoại:</span> <span class="font-bold text-gray-800">@(Model.SoDienThoai ?? "--")</span></div>
+                <div class="flex lg:col-span-2"><span class="text-gray-500 w-36 shrink-0">Email:</span> <span class="font-bold text-gray-800">@(Model.EmailCaNhan ?? "--")</span></div>
+
+                <div class="flex lg:col-span-3"><span class="text-gray-500 w-36 shrink-0">Email trường:</span> <span class="font-bold text-gray-800">@(Model.EmailTruong ?? "--")</span></div>
+                <div class="flex lg:col-span-3"><span class="text-gray-500 w-36 shrink-0">Địa chỉ liên hệ:</span> <span class="font-bold text-gray-800">@(Model.DiaChiLienHe ?? "--")</span></div>
+                <div class="flex lg:col-span-3"><span class="text-gray-500 w-36 shrink-0">Nơi sinh:</span> <span class="font-bold text-gray-800">@(Model.NoiSinh ?? "--")</span></div>
+                <div class="flex lg:col-span-3"><span class="text-gray-500 w-36 shrink-0">Hộ khẩu:</span> <span class="font-bold text-gray-800">@(Model.HoKhauThuongTru ?? "--")</span></div>
+            </div>
+        </div>
+    </div>
+</div>

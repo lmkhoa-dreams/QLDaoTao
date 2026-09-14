@@ -1,0 +1,58 @@
+﻿@model QLSinhVien.Models.HocPhanMo
+@{
+    ViewData["Title"] = "Cấu hình Lớp dạy";
+    Layout = "~/Areas/GiangVien/Views/Shared/_GiangVienLayout.cshtml";
+}
+
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 p-8 max-w-2xl mx-auto">
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">Mở lớp học phần mới</h2>
+    <p class="text-gray-500 mb-6 border-b pb-4">Môn học: <span class="font-bold text-blue-600">@ViewBag.TenMon (@ViewBag.MaMon)</span></p>
+
+    <form action="/GiangVien/DangKyDay/MoLop" method="post">
+        <input type="hidden" name="MaMon" value="@ViewBag.MaMon" />
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Học kỳ <span class="text-red-500">*</span></label>
+                <input type="text" name="HocKy" value="HK1_2026_2027" required class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Sĩ số tối đa</label>
+                <input type="number" name="SiSoToiDa" value="40" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Thứ dạy</label>
+                <select name="Thu" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+                    <option value="Thứ 2">Thứ 2</option>
+                    <option value="Thứ 3">Thứ 3</option>
+                    <option value="Thứ 4">Thứ 4</option>
+                    <option value="Thứ 5">Thứ 5</option>
+                    <option value="Thứ 6">Thứ 6</option>
+                    <option value="Thứ 7">Thứ 7</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phòng học</label>
+                <input type="text" name="PhongHoc" placeholder="VD: A1.01" class="w-full px-4 py-2 border rounded-md focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tiết bắt đầu</label>
+                <input type="number" name="TietBatDau" placeholder="VD: 1" class="w-full px-4 py-2 border rounded-md">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tiết kết thúc</label>
+                <input type="number" name="TietKetThuc" placeholder="VD: 3" class="w-full px-4 py-2 border rounded-md">
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-4 border-t">
+            <a href="/GiangVien/DangKyDay/Index" class="px-6 py-2 border text-gray-600 rounded-md hover:bg-gray-50">Hủy bỏ</a>
+            <button type="submit" class="px-6 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 font-medium">Xác nhận Lưu</button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,155 @@
+﻿@model IEnumerable<IGrouping<string, QLSinhVien.Models.KetQuaHocTap>>
+@{
+    ViewData["Title"] = "Kết quả học tập";
+    Layout = "~/Areas/SinhVien/Views/Shared/_SinhVienLayout.cshtml";
+    var sv = ViewBag.SinhVien as QLSinhVien.Models.SinhVien;
+}
+
+<div class="bg-white p-6 min-h-screen">
+
+    <!-- HEADER: TÊN SINH VIÊN -->
+    <div class="flex items-center gap-4 border-b pb-3 mb-6">
+        <h2 class="text-xl font-bold text-gray-700 flex items-center gap-2">
+            <i class="fa-solid fa-table-cells text-gray-500"></i> Kết quả học tập
+        </h2>
+        <span class="text-xl font-bold text-[#0ea5e9]">
+            @sv?.HoTen - @sv?.Mssv
+        </span>
+    </div>
+
+    <!-- PHẦN 1: BẢNG CHỨNG CHỈ ĐIỀU KIỆN TỐT NGHIỆP -->
+    <div class="mb-10 border border-gray-300 shadow-sm">
+        <div class="bg-[#fefce8] text-red-600 font-bold text-center py-3 border-b border-gray-300">
+            Chứng chỉ điều kiện tốt nghiệp
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-50 text-[#0ea5e9] border-b border-gray-300 text-center">
+                        <th class="p-3 border-r font-bold w-16">STT</th>
+                        <th class="p-3 border-r font-bold">Loại chứng chỉ</th>
+                        <th class="p-3 border-r font-bold">Theo quy định</th>
+                        <th class="p-3 border-r font-bold w-28">Đã nộp</th>
+                        <th class="p-3 font-bold w-32">Xác nhận</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700">
+                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="p-3 border-r text-center font-bold text-[#0ea5e9]">1</td>
+                        <td class="p-3 border-r">Chứng chỉ Ngoại ngữ</td>
+                        <td class="p-3 border-r">Năng lực ngoại ngữ bậc 4 (bậc 4/6)</td>
+                        <td class="p-3 border-r"></td>
+                        <td class="p-3 text-center text-gray-500 font-medium">Chưa hoàn tất</td>
+                    </tr>
+                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="p-3 border-r text-center font-bold text-[#0ea5e9]">2</td>
+                        <td class="p-3 border-r">Chứng nhận nghề nghiệp</td>
+                        <td class="p-3 border-r">Sáng tạo nội dung số</td>
+                        <td class="p-3 border-r"></td>
+                        <td class="p-3 text-center text-gray-500 font-medium">Chưa hoàn tất</td>
+                    </tr>
+                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="p-3 border-r text-center font-bold text-[#0ea5e9]">3</td>
+                        <td class="p-3 border-r">Giáo dục quốc phòng</td>
+                        <td class="p-3 border-r">Giáo dục quốc phòng</td>
+                        <td class="p-3 border-r"></td>
+                        <td class="p-3 text-center text-gray-500 font-medium">Chưa hoàn tất</td>
+                    </tr>
+                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="p-3 border-r text-center font-bold text-[#0ea5e9]">4</td>
+                        <td class="p-3 border-r">Kỹ năng hành chính văn phòng trong môi trường số</td>
+                        <td class="p-3 border-r">Kỹ năng hành chính văn phòng trong môi trường số</td>
+                        <td class="p-3 border-r"></td>
+                        <td class="p-3 text-center text-gray-500 font-medium">Chưa hoàn tất</td>
+                    </tr>
+                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="p-3 border-r text-center font-bold text-[#0ea5e9]">5</td>
+                        <td class="p-3 border-r">Kỹ năng làm chủ công việc</td>
+                        <td class="p-3 border-r">Kỹ năng làm chủ công việc</td>
+                        <td class="p-3 border-r"></td>
+                        <td class="p-3 text-center text-gray-500 font-medium">Chưa hoàn tất</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PHẦN 2: BẢNG ĐIỂM CHI TIẾT THEO HỌC KỲ (Lấy Data từ DB) -->
+    <div class="border border-gray-300 overflow-x-auto shadow-sm">
+        <table class="w-full text-sm text-center border-collapse whitespace-nowrap">
+
+            <!-- THEAD TINH GỌN CHUẨN THEO DATABASE CỦA ÔNG -->
+            <thead class="bg-blue-50 text-blue-700 font-bold">
+                <tr class="border-b border-gray-300">
+                    <th class="p-3 border-r border-gray-300 w-12">STT</th>
+                    <th class="p-3 border-r border-gray-300">Mã lớp học phần</th>
+                    <th class="p-3 border-r border-gray-300 text-left min-w-[250px]">Tên môn học/học phần</th>
+                    <th class="p-3 border-r border-gray-300 w-20">Số TC</th>
+                    <th class="p-3 border-r border-gray-300 w-24">Điểm Quá trình</th>
+                    <th class="p-3 border-r border-gray-300 w-24">Điểm Giữa kỳ</th>
+                    <th class="p-3 border-r border-gray-300 w-24">Điểm Thi</th>
+                    <th class="p-3 border-r border-gray-300 w-24 text-red-600">Tổng kết</th>
+                    <th class="p-3 border-r border-gray-300 w-20">Điểm chữ</th>
+                    <th class="p-3 w-40">Trạng thái</th>
+                </tr>
+            </thead>
+
+            <!-- ĐỔ DỮ LIỆU ĐÃ GOM NHÓM THEO TỪNG HỌC KỲ -->
+            <tbody class="text-gray-700">
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var hocKyGroup in Model)
+                    {
+                        <!-- Dòng Group Tên Học Kỳ -->
+                        <tr class="bg-gray-100 border-b border-gray-300">
+                            <td colspan="10" class="p-2.5 text-left font-bold text-blue-800 uppercase tracking-wide">
+                                @(hocKyGroup.Key ?? "Chưa xếp học kỳ")
+                            </td>
+                        </tr>
+
+                        <!-- Lặp các môn học bên trong Học kỳ đó -->
+                        int stt = 1;
+                        foreach (var item in hocKyGroup)
+                        {
+                            <tr class="border-b border-gray-200 hover:bg-yellow-50 transition-colors">
+                                <td class="p-2.5 border-r text-gray-500 font-medium">@(stt++)</td>
+                                <td class="p-2.5 border-r font-medium text-gray-800">@item.MaHp</td>
+                                <td class="p-2.5 border-r text-left text-blue-900 font-medium">@item.MaHpNavigation?.MaMonNavigation?.TenMon</td>
+                                <td class="p-2.5 border-r font-medium">@item.MaHpNavigation?.MaMonNavigation?.SoTinChi</td>
+
+                                <!-- Dữ liệu điểm -->
+                                <td class="p-2.5 border-r">@item.DiemQuaTrinh</td>
+                                <td class="p-2.5 border-r">@item.DiemGiuaKy</td>
+                                <td class="p-2.5 border-r">@item.DiemThi</td>
+
+                                <!-- Điểm tổng kết làm nổi bật màu đỏ -->
+                                <td class="p-2.5 border-r font-bold text-red-600 bg-red-50/30">@item.DiemTongKet</td>
+
+                                <!-- Điểm chữ in đậm -->
+                                <td class="p-2.5 border-r font-bold text-blue-600">@item.DiemChu</td>
+
+                                <!-- Trạng thái -->
+                                <td class="p-2.5 text-xs">
+                                    @if (item.TrangThai == "Đăng ký thành công")
+                                    {
+                                        <span class="text-green-600 bg-green-100 px-2 py-1 rounded font-medium">@item.TrangThai</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-600 bg-gray-100 px-2 py-1 rounded font-medium">@item.TrangThai</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="10" class="p-10 text-center text-gray-500 text-base">Bạn chưa có dữ liệu kết quả học tập.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

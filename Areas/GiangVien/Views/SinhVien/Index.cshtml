@@ -1,0 +1,90 @@
+﻿@model IEnumerable<QLSinhVien.Models.HocPhanMo>
+@{
+    ViewData["Title"] = "Lớp giảng dạy";
+    Layout = "~/Areas/GiangVien/Views/Shared/_GiangVienLayout.cshtml";
+    // Móc cuốn từ điển tên môn từ Controller ra
+    var tuDienMonHoc = ViewBag.TuDienMonHoc as Dictionary<string, string>;
+}
+
+<div class="mb-6 flex justify-between items-start">
+    <div>
+        <h2 class="text-2xl font-bold text-gray-800">Danh sách Lớp học phần</h2>
+        <p class="text-gray-500 text-sm mt-1">Chọn một lớp để xem danh sách sinh viên</p>
+    </div>
+
+    <!-- BỘ LỌC HỌC KỲ -->
+    <div>
+        <form id="formHocKySV" action="/GiangVien/SinhVien/Index" method="get">
+            <select name="hocKy" onchange="document.getElementById('formHocKySV').submit()" class="border border-emerald-300 bg-emerald-50 text-emerald-800 rounded-lg px-4 py-2 min-w-[200px] focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold cursor-pointer shadow-sm">
+                @if (ViewBag.DsHocKy != null)
+                {
+                    foreach (var hk in ViewBag.DsHocKy)
+                    {
+                        <option value="@hk" selected="@(ViewBag.HocKyHienTai == hk ? "selected" : null)">@hk</option>
+                    }
+                }
+            </select>
+        </form>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    @if (Model != null && Model.Any())
+    {
+        foreach (var lop in Model)
+        {
+            // Lấy tên môn từ từ điển, nếu không thấy thì để "Không xác định"
+            string tenMon = tuDienMonHoc != null && tuDienMonHoc.ContainsKey(lop.MaMon) ? tuDienMonHoc[lop.MaMon] : "Không xác định";
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow relative overflow-hidden group flex flex-col h-full">
+                <!-- Thanh viền bên trái -->
+                <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-500 group-hover:w-2.5 transition-all"></div>
+
+                <div class="flex-1 ml-2">
+                    <div class="flex justify-between items-start mb-3">
+                        <!-- NĂM HỌC / HỌC KỲ -->
+                        <span class="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-100 uppercase tracking-wider">
+                            <i class="fa-regular fa-calendar mr-1"></i> @lop.HocKy
+                        </span>
+                        <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 shrink-0">
+                            <i class="fa-solid fa-chalkboard text-lg"></i>
+                        </div>
+                    </div>
+
+                    <!-- TÊN MÔN HỌC BỰ -->
+                    <h3 class="text-xl font-bold text-gray-800 mb-4 line-clamp-2 leading-snug" title="@tenMon">
+                        @tenMon
+                    </h3>
+
+                    <!-- HỘP THÔNG TIN MÃ -->
+                    <div class="space-y-1.5 text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-100">
+                        <p class="flex justify-between"><span class="text-gray-500">Mã Học Phần:</span> <span class="font-bold text-gray-800">@lop.MaHp</span></p>
+                        <p class="flex justify-between"><span class="text-gray-500">Mã Môn:</span> <span class="font-bold text-emerald-600">@lop.MaMon</span></p>
+                    </div>
+                </div>
+
+                <!-- BOTTOM (SĨ SỐ & NÚT BẤM) -->
+                <div class="flex items-center justify-between mt-5 pt-4 border-t border-gray-100 ml-2">
+                    <div class="text-sm">
+                        <span class="text-gray-500">Sĩ số:</span>
+                        <span class="font-bold @(lop.SiSoHienTai >= lop.SiSoToiDa ? "text-red-500" : "text-gray-800")">
+                            @lop.SiSoHienTai / @lop.SiSoToiDa
+                        </span>
+                    </div>
+                    <a href="/GiangVien/SinhVien/DanhSach?id=@lop.MaHp" class="text-sm font-medium text-emerald-600 hover:text-emerald-700 flex items-center bg-emerald-50 px-4 py-2 rounded-lg transition-colors hover:bg-emerald-100">
+                        Xem chi tiết <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                    </a>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="col-span-full bg-white p-10 rounded-xl border border-gray-100 text-center">
+            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                <i class="fa-solid fa-box-open text-3xl"></i>
+            </div>
+            <p class="text-gray-500">Thầy/Cô chưa được phân công giảng dạy lớp học phần nào trong học kỳ này.</p>
+        </div>
+    }
+</div>

@@ -1,0 +1,94 @@
+﻿@{
+    Layout = "~/Areas/SinhVien/Views/Shared/_SinhVienLayout.cshtml";
+    ViewData["Title"] = "Cập nhật thông tin";
+    var thongBao = TempData["ThongBao"] as string;
+}
+
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <h1 class="text-2xl font-bold text-gray-700">
+            Cập nhật thông tin
+        </h1>
+
+        <p class="mt-2 mb-6 text-sm text-gray-500">
+            Upload giấy tờ để nhà trường kiểm tra và xét duyệt.
+        </p>
+
+        @if (!string.IsNullOrWhiteSpace(thongBao))
+        {
+            <div role="status"
+                 class="mb-4 rounded-lg bg-green-50 p-4 text-green-700">
+                @thongBao
+            </div>
+        }
+
+        @Html.ValidationSummary(
+        false,
+                "",
+                new { @class = "mb-4 text-sm text-red-600" })
+
+        <form action="@Url.Action("Upload", "GiayTo", new { area = "" })"
+              method="post"
+              enctype="multipart/form-data"
+              class="space-y-5">
+
+            @Html.AntiForgeryToken()
+
+            <div>
+                <label for="loaiGiayTo"
+                       class="block mb-2 text-sm font-semibold text-gray-700">
+                    Loại giấy tờ
+                </label>
+
+                @Html.TextBox(
+                                "loaiGiayTo",
+                                null,
+                                new
+                                {
+                                    id = "loaiGiayTo",
+                                    @class = "w-full rounded-lg border border-gray-300 px-4 py-3",
+                                    placeholder = "Ví dụ: Bằng tốt nghiệp THPT, Giấy khai sinh...",
+                                    maxlength = "100",
+                                    required = "required"
+                                })
+            </div>
+
+            <div>
+                <label for="file"
+                       class="block mb-2 text-sm font-semibold text-gray-700">
+                    Chọn ảnh hoặc PDF
+                </label>
+
+                <input id="file"
+                       name="file"
+                       type="file"
+                       accept=".jpg,.jpeg,.png,.pdf"
+                       required
+                       class="block w-full rounded-lg border border-gray-300 p-3 text-sm" />
+
+                <p class="mt-2 text-xs text-gray-500">
+                    Hỗ trợ JPG, JPEG, PNG, PDF. Tối đa 5 MB mỗi file.
+                    Nếu gửi bị lỗi, vui lòng chọn lại file.
+                </p>
+            </div>
+
+            <div class="rounded-lg bg-blue-50 p-4 text-sm text-blue-700">
+                Giấy tờ gửi thành công sẽ có trạng thái
+                <strong>Chờ duyệt</strong>.
+            </div>
+
+            <div class="flex flex-wrap items-center gap-4">
+                <button type="submit"
+                        class="rounded-lg bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700">
+                    <i class="fa-solid fa-cloud-arrow-up mr-2"></i>
+                    Gửi giấy tờ
+                </button>
+
+                <a href="@Url.Action("Index", "SinhVien", new { area = "SinhVien" })"
+                   class="text-sm font-medium text-gray-600 hover:text-blue-600">
+                    Về trang chủ
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

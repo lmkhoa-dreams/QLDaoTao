@@ -1,0 +1,52 @@
+﻿@model IEnumerable<QLSinhVien.Models.MonHoc>
+@{
+    ViewData["Title"] = "Đăng ký môn giảng dạy";
+    Layout = "~/Areas/GiangVien/Views/Shared/_GiangVienLayout.cshtml"; 
+}
+
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+    <div class="mb-6">
+        <h2 class="text-xl font-bold text-gray-800">Đăng ký lớp học phần</h2>
+        <p class="text-gray-500 text-sm mt-1">Danh sách môn học thuộc: <span class="font-bold text-blue-600">@ViewBag.TenKhoa</span></p>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-gray-50 text-gray-700 text-sm uppercase tracking-wider">
+                    <th class="p-4 border-b font-semibold">Mã Môn</th>
+                    <th class="p-4 border-b font-semibold">Tên Môn Học</th>
+                    <th class="p-4 border-b font-semibold text-center">Tín Chỉ</th>
+                    <th class="p-4 border-b font-semibold text-center">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr class="hover:bg-blue-50/50 transition-colors border-b">
+                            <td class="p-4 font-medium text-blue-600">@item.MaMon</td>
+                            <td class="p-4 text-gray-800">@item.TenMon</td>
+                            <td class="p-4 text-center text-gray-600">@item.SoTinChi</td>
+                            <td class="p-4 text-center">
+                                <a href="/GiangVien/DangKyDay/MoLop?maMon=@item.MaMon" class="inline-flex items-center px-4 py-2 bg-emerald-500 text-white rounded text-sm font-medium hover:bg-emerald-600 transition-colors">
+                                    <i class="fa-solid fa-calendar-plus mr-2"></i> Mở lớp dạy
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="p-8 text-center text-gray-500">
+                            <i class="fa-solid fa-box-open text-4xl mb-3 text-gray-300 block"></i>
+                            Khoa của Thầy/Cô hiện chưa có môn học nào trong hệ thống!
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

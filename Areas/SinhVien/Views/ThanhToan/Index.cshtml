@@ -1,0 +1,190 @@
+﻿@model IEnumerable<QLSinhVien.Models.KetQuaHocTap>
+@{
+    ViewData["Title"] = "Thanh toán trực tuyến";
+    Layout = "~/Areas/SinhVien/Views/Shared/_SinhVienLayout.cshtml";
+
+    long donGiaTinChi = 990000;
+    long tongTien = 0;
+    if (Model != null && Model.Any())
+    {
+        tongTien = Model.Sum(m => (m.MaHpNavigation?.MaMonNavigation?.SoTinChi ?? 0)) * donGiaTinChi;
+    }
+}
+
+<div class="bg-gray-50 p-6 min-h-screen pb-20">
+    <div class="max-w-4xl mx-auto">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-4"><i class="fa-solid fa-file-invoice-dollar text-blue-600 mr-2"></i>Thanh toán học phí</h2>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-4 rounded-lg mb-6 flex items-center shadow-sm text-lg">
+                <i class="fa-solid fa-circle-check text-2xl mr-3"></i> <strong>@TempData["Success"]</strong>
+            </div>
+        }
+
+        <!-- 1 Ô DUY NHẤT GỘP TẤT CẢ -->
+        <div class="bg-white p-8 rounded-xl shadow-md border border-gray-200">
+
+            <!-- PHẦN TRÊN: BẢNG CHI TIẾT CÔNG NỢ -->
+            <h3 class="text-xl font-bold text-blue-800 mb-4">Chi tiết thanh toán</h3>
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="overflow-x-auto border rounded-lg mb-6">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-blue-50 text-blue-700">
+                            <tr>
+                                <th class="p-3 border-b border-blue-100 text-center w-12">STT</th>
+                                <th class="p-3 border-b border-blue-100">Mã HP</th>
+                                <th class="p-3 border-b border-blue-100">Tên môn học</th>
+                                <th class="p-3 border-b border-blue-100 text-center w-16">TC</th>
+                                <th class="p-3 border-b border-blue-100 text-right">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int stt = 1;
+                            }
+                            @foreach (var item in Model)
+                            {
+                                int tc = item.MaHpNavigation?.MaMonNavigation?.SoTinChi ?? 0;
+                                long tienMon = tc * donGiaTinChi;
+                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                    <td class="p-3 text-center">@(stt++)</td>
+                                    <td class="p-3 font-medium text-gray-600">@item.MaHp</td>
+                                    <td class="p-3 font-bold text-gray-800">@item.MaHpNavigation?.MaMonNavigation?.TenMon</td>
+                                    <td class="p-3 text-center">@tc</td>
+                                    <td class="p-3 text-right font-medium text-red-600">@tienMon.ToString("N0") đ</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="bg-blue-50 p-5 rounded-lg flex justify-between items-center border border-blue-100 mb-8">
+                    <span class="text-lg font-bold text-gray-700">TỔNG THANH TOÁN:</span>
+                    <span class="text-3xl font-black text-red-600">@tongTien.ToString("N0") VNĐ</span>
+                </div>
+
+                <!-- ĐƯỜNG PHÂN CÁCH -->
+                <div class="relative flex py-5 items-center">
+                    <div class="flex-grow border-t border-gray-200"></div>
+                    <span class="flex-shrink-0 mx-4 text-gray-400 text-sm"><i class="fa-solid fa-arrow-down"></i></span>
+                    <div class="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                <!-- PHẦN DƯỚI: PHƯƠNG THỨC THANH TOÁN QUÉT QR -->
+                <div class="max-w-2xl mx-auto text-center mt-4">
+                    <h3 class="text-xl font-bold text-blue-800 mb-6">Chọn ngân hàng để thanh toán</h3>
+
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
+                        <button onclick="taoMaQR('vietcombank')" class="bank-btn border-2 border-gray-200 rounded-lg p-3 hover:border-green-500 focus:border-green-500 focus:bg-green-50 transition-all bg-white shadow-sm hover:shadow flex items-center justify-center">
+                            <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/02/Logo-Vietcombank.png" class="w-full h-8 object-contain" />
+                        </button>
+
+                        <button onclick="taoMaQR('mbbank')" class="bank-btn border-2 border-gray-200 rounded-lg p-3 hover:border-blue-500 focus:border-blue-500 focus:bg-blue-50 transition-all bg-white shadow-sm hover:shadow flex items-center justify-center">
+                            <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/02/Logo-MB-Bank-MBB.png" class="w-full h-8 object-contain" />
+                        </button>
+
+                        <button onclick="taoMaQR('agribank')" class="bank-btn border-2 border-gray-200 rounded-lg p-3 hover:border-orange-500 focus:border-orange-500 focus:bg-orange-50 transition-all bg-white shadow-sm hover:shadow flex items-center justify-center">
+                            <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/01/Logo-Agribank-V.png" class="w-full h-8 object-contain" />
+                        </button>
+
+                        <button onclick="taoMaQR('bidv')" class="bank-btn border-2 border-gray-200 rounded-lg p-3 hover:border-teal-500 focus:border-teal-500 focus:bg-teal-50 transition-all bg-white shadow-sm hover:shadow flex items-center justify-center">
+                            <img src="https://bidv.diadiembank.com/wp-content/uploads/2024/12/logo-bidv.jpg" class="w-full h-8 object-contain" />
+                        </button>
+
+                        <button onclick="taoMaQR('vietinbank')" class="bank-btn border-2 border-gray-200 rounded-lg p-3 hover:border-blue-600 focus:border-blue-600 focus:bg-blue-50 transition-all bg-white shadow-sm hover:shadow flex items-center justify-center">
+                            <img src="https://rubee.com.vn/admin/webroot/upload/image/images/tin-tuc/logo-vietinbank.png" class="w-full h-8 object-contain" />
+                        </button>
+
+                        <button onclick="taoMaQR('techcombank')" class="bank-btn border-2 border-gray-200 rounded-lg p-3 hover:border-red-500 focus:border-red-500 focus:bg-red-50 transition-all bg-white shadow-sm hover:shadow flex items-center justify-center">
+                            <img src="https://rubee.com.vn/admin/webroot/upload/image/images/teckcombank-logo.jpg" class="w-full h-8 object-contain" />
+                        </button>
+
+                        <button onclick="taoMaQR('vpbank')" class="bank-btn border-2 border-gray-200 rounded-lg p-3 hover:border-green-600 focus:border-green-600 focus:bg-green-50 transition-all bg-white shadow-sm hover:shadow flex items-center justify-center">
+                            <img src="https://tse1.mm.bing.net/th/id/OIP.OSihhQZi264KM1_qM4cmhAHaHa?r=0&w=600&h=600&rs=1&pid=ImgDetMain&o=7&rm=3" class="w-full h-8 object-contain" />
+                        </button>
+
+                        <button onclick="taoMaQR('sacombank')" class="bank-btn border-2 border-gray-200 rounded-lg p-3 hover:border-blue-400 focus:border-blue-400 focus:bg-blue-50 transition-all bg-white shadow-sm hover:shadow flex items-center justify-center">
+                            <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/01/Logo-Sacombank.png" class="w-full h-8 object-contain" />
+                        </button>
+
+                        <button onclick="taoMaQR('acb')" class="bank-btn border-2 border-gray-200 rounded-lg p-3 hover:border-blue-700 focus:border-blue-700 focus:bg-blue-50 transition-all bg-white shadow-sm hover:shadow flex items-center justify-center">
+                            <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/01/Logo-ACB.png" class="w-full h-8 object-contain" />
+                        </button>
+
+                        <button onclick="taoMaQR('vib')" class="bank-btn border-2 border-gray-200 rounded-lg p-3 hover:border-orange-400 focus:border-orange-400 focus:bg-orange-50 transition-all bg-white shadow-sm hover:shadow flex items-center justify-center">
+                            <img src="https://ib.vib.com.vn/images/logo-n-text.png" class="w-full h-8 object-contain" />
+                        </button>
+
+                        <button onclick="taoMaQR('tpbank')" class="bank-btn border-2 border-gray-200 rounded-lg p-3 hover:border-purple-500 focus:border-purple-500 focus:bg-purple-50 transition-all bg-white shadow-sm hover:shadow flex items-center justify-center">
+                            <img src="https://rubee.com.vn/wp-content/uploads/2021/05/logo-tp-bank.jpg" class="w-full h-8 object-contain" />
+                        </button>
+
+                        <button onclick="taoMaQR('hdbank')" class="bank-btn border-2 border-gray-200 rounded-lg p-3 hover:border-red-600 focus:border-red-600 focus:bg-red-50 transition-all bg-white shadow-sm hover:shadow flex items-center justify-center">
+                            <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/01/Logo-HDBank.png" class="w-full h-8 object-contain" />
+                        </button>
+                    </div>
+
+                    <div id="khungQR" class="hidden flex-col items-center justify-center bg-gray-50 border border-dashed border-gray-300 rounded-xl p-6 mb-8 relative">
+                        <span class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white px-4 py-1 rounded-full text-sm font-bold shadow">Mở App Ngân hàng & Quét QR</span>
+
+                        <img id="imgQR" src="" class="w-56 h-56 border border-gray-200 rounded-lg shadow-sm mt-4 mb-4 bg-white p-2" />
+
+                        <div class="bg-white px-6 py-3 rounded-lg border border-gray-200 shadow-sm w-full">
+                            <p class="text-sm text-gray-500 mb-1">Số tiền thanh toán:</p>
+                            <p class="text-xl font-bold text-red-600 mb-3">@tongTien.ToString("N0") VNĐ</p>
+
+                            <p class="text-sm text-gray-500 mb-1">Nội dung chuyển khoản (Đã lưu tự động):</p>
+                            <p class="font-mono text-sm font-bold text-blue-900 break-words bg-blue-50 px-3 py-2 rounded">@ViewBag.NoiDungCK</p>
+                        </div>
+                    </div>
+
+                    <form action="/SinhVien/ThanhToan/XacNhan" method="post">
+                        <button type="submit" id="btnXacNhan" disabled class="w-full bg-gray-400 text-white font-bold text-lg py-4 rounded-xl shadow-md transition-colors cursor-not-allowed">
+                            Xác nhận đã thanh toán thành công
+                        </button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-12">
+                    <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+                        <i class="fa-solid fa-check-double text-4xl"></i>
+                    </div>
+                    <p class="text-gray-600 text-xl font-medium">Bạn đã hoàn thành mọi khoản học phí!</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    function taoMaQR(tenNganhHang) {
+        const soTien = @tongTien;
+        const noiDung = "@Html.Raw(ViewBag.NoiDungCK)";
+
+        // Cấu hình tài khoản thụ hưởng
+        const tenTaiKhoan = "TRUONG DAI HOC CNTT";
+        const stk = "1111111111";
+
+        // GỌI API VIETQR
+        const urlQR = `https://img.vietqr.io/image/${tenNganhHang}-${stk}-compact2.png?amount=${soTien}&addInfo=${encodeURIComponent(noiDung)}&accountName=${encodeURIComponent(tenTaiKhoan)}`;
+
+        const khungQR = document.getElementById('khungQR');
+        khungQR.classList.remove('hidden');
+        khungQR.classList.add('flex');
+        document.getElementById('imgQR').src = urlQR;
+
+        // Bật nút xác nhận sau khi chọn QR
+        const btnXacNhan = document.getElementById('btnXacNhan');
+        btnXacNhan.disabled = false;
+        btnXacNhan.classList.remove('bg-gray-400', 'cursor-not-allowed');
+        btnXacNhan.classList.add('bg-blue-600', 'hover:bg-blue-700', 'cursor-pointer');
+
+        // Cuộn mượt xuống mã QR để người dùng thấy
+        khungQR.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+</script>
